@@ -1,5 +1,8 @@
 #pragma once
-// https://github.com/OneLoneCoder/synth/blob/master/main2.cpp
+/********************************************************************/
+/* References & Notes                                               */
+/* https://github.com/OneLoneCoder/synth/blob/master/main2.cpp      */
+/********************************************************************/
 
 #include <cmath>
 
@@ -32,6 +35,7 @@ namespace bristol
             void CurrentWaveform(bristol::WAVEFORM_SHAPE newShape) { m_currentShape = newShape; }
             bristol::WAVEFORM_SHAPE CurrentWaveform() { return m_currentShape; }
 
+            // Temporary function to hold the waveforms
             double TempExec(double frequency, double dTime)
             {
                 switch (m_currentShape)
