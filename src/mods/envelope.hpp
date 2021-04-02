@@ -57,11 +57,13 @@ namespace bristol
                 fmt::print("Destructing Envelope\n");
             }
 
+            // Getters
             bristol::Milliseconds AttackTime() { return m_attackTime; }
             bristol::Milliseconds SustainTime() { return m_sustainTime; }
             bristol::Milliseconds DecayTime() { return m_decayTime; }
             bristol::Milliseconds ReleaseTime() { return m_releaseTime; }
 
+            // Setters
             void AttackTime(bristol::Milliseconds attackTime)
             {
                 if(attackTime.m_value >= 0.0)
@@ -92,17 +94,22 @@ namespace bristol
 
                 if(m_isActive)
                 {
+                    // Attack, Decay, Sustain
+
                     if(timePosition <= m_attackTime)
                     {
+                        // Attack
                         amplitude = (timePosition / m_attackTime) * m_peakAttackAmp;
                     }
                     else if(timePosition > m_attackTime && timePosition <= (m_attackTime + m_decayTime))
                     {
+                        // Decay
                         // FIXME
                         amplitude = ((timePosition - m_attackTime) / m_decayTime) * (m_sustainAmp - m_peakAttackAmp) + m_peakAttackAmp;
                     }
                     else if(timePosition > (m_attackTime + m_decayTime) && m_sustainTime != 0.0_ms)
                     {
+                        // Sustain
                         if(m_sustainTime > 0.0_ms && timePosition < (m_attackTime + m_decayTime + m_sustainTime))
                         {
                             amplitude = m_sustainAmp;
@@ -111,6 +118,7 @@ namespace bristol
                 }
                 else
                 {
+                    // Release
                 }
 
                 return amplitude;
