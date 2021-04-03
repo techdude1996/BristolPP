@@ -1,21 +1,67 @@
 #pragma once
 
-/******************************************************************************/
-/* Noise needed:                                                              */
-/*    - White
- *    - Pink
- *    - Red
- *    - Brown? */
-/******************************************************************************/
+#include <random>
 
-#ifdef BRISTOL_DEBUG
-#include <fmt/format.h>
-#endif
+/*******************************************************************************
+Noise needed:
+    - White
+    - Pink
+    - Red
+    - Brown?
+
+General idea for usage:
+iNoiseGenerator foo = WhiteNoise(someSeedValueHere?);
+
+The interface base class iNoiseGenerator provides a common interface for all
+the noise algorithms to be used by, allowing for (hopefully) easy algorithm
+switching.
+********************************************************************************/
 
 namespace bristol
 {
-    class Noise
+    class iNoiseGenerator
     {
-    };  
-};
+        public:
+            virtual void Init() = 0;
+            virtual double GetNextValue() = 0;
+    };
 
+    class WhiteNoise : public iNoiseGenerator
+    {
+        public:
+            void Init() override
+            {
+            }
+
+            double GetNextValue() override
+            {
+                return 0.0;
+            }
+    };
+
+    class PinkNoise : public iNoiseGenerator
+    {
+        public:
+            void Init() override
+            {
+            }
+
+            double GetNextValue() override
+            {
+                return 0.0;
+            }
+    };
+
+    class RedNoise : public iNoiseGenerator
+    {
+        public:
+            void Init() override
+            {
+            }
+
+            double GetNextValue() override
+            {
+                return 0.0;
+            }
+    };
+};
