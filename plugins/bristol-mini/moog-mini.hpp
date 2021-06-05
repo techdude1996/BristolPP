@@ -8,28 +8,88 @@
  **/
 
 #include "DistrhoPlugin.hpp"
+#include "DistrhoPluginInfo.h"
+#include "DistrhoUtils.hpp"
 
-#include "oscillator.hpp"
 #include "envelope.hpp"
+#include "noise.hpp"
+#include "oscillator.hpp"
 
 namespace bristol
 {
-    class MiniMoogD : public Isynth
+    class MiniMoogD : public Plugin
     {
         private:
             bristol::Oscillator m_Osc1;
             bristol::Oscillator m_Osc2;
             bristol::Oscillator m_Osc3;
+            bristol::Oscillator m_Lfo;  // Not sure if keeping this. Only the re-release has a dedicated LFO
+            bristol::Envelope m_envelopeFilter;
+            bristol::Envelope m_envelopeMod;
+            bristol::Noise m_noiseGen;
 
-            // TODO: Rename me
-            //                vvvvvv
-            bristol::Envelope m_ADSR;
         public:
-            MiniMoogD() : Plugin(0, 0, 0)
+            enum Parameters
             {
-            }
+                // Controllers
+                paramTune = 0,
+                paramGlide,
+                paramModMix,
+                paramOscModSwitch,
+                // Osc Bank
+                paramOsc1Range,
+                paramOsc1Waveform,
+                paramOsc2Range,
+                paramOsc2Frequency,
+                paramOsc2Waveform,
+                paramOsc3CtlSwitch,
+                paramOsc3Range,
+                paramOsc3Frequency,
+                paramOsc3Waveform,
+                //Mixer
+                paramOsc1MixSwitch,
+                paramOsc1Volume,
+                paramOsc2MixSwitch,
+                paramOsc2Volume,
+                paramOsc3MixSwitch,
+                paramOsc3Volume,
+                paramExtInputMixSwitch,
+                paramExtInputVolume,
+                paramNoiseMixSwitch,
+                paramNoiseVolume,
+                paramNoiseTypeSwitch,
+                // Modifiers - Switches
+                paramFilterModSwitch,
+                paramKeyboardCtl1Switch,
+                paramKeyboardCtl2Switch,
+                // Modifiers - Frequency Filter Envelope
+                paramCutoffFreq,
+                paramEmphasis,
+                paramContourAmount,
+                paramAttackTime,
+                paramDecayTime,
+                paramSustainLevel,
+                // Modifiers - Loudness Contour
+                paramLoudnessAttackTime,
+                paramLoudnessDecayTime,
+                paramLoudnessSustainLevel,
+                // Output
+                paramMainVolumeOut,
+                paramMainVolumeSwitch,
+                paramA440Switch,
+                paramPhonesVolumeOut,
+                paramPitchBendWheel,
+                paramModWheel,
+                paramCount
+            };
+
+            MiniMoogD();
+            ~MiniMoogD();
 
         protected:
+            /*
+             * DISTRHO Informational Callbacks
+             */
             const char* getLabel() const override
             {
                 return "BristolMini";
@@ -65,7 +125,10 @@ namespace bristol
                 // TODO: Need this information
                 return d_cconst('d', 'M', 'T', 'r');
             }
-                
+              
+            /*
+             * DISTRHO Plugin Callbacks
+             */
             void initParameter(uint32_t, Parameter&) override;
 
             float getParameterValue(uint32_t) const override;
@@ -74,4 +137,11 @@ namespace bristol
 
             void run(const float**, float**, uint32_t, const MidiEvent*, uint32_t) override;
     };
+
+    Plugin* createPlugin()
+    {
+        return new bristol::MiniMoogD();
+        
+    }
+        
 }
