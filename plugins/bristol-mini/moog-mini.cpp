@@ -5,7 +5,7 @@ bristol::MiniMoogD::MiniMoogD() : Plugin(Parameters::paramCount, 1, 0)
 {
     // TODO
     // Init oscs, envs, etc. here
-    loadProgram(0);
+    // loadProgram(0);
 }
 
 bristol::MiniMoogD::~MiniMoogD()
@@ -13,9 +13,9 @@ bristol::MiniMoogD::~MiniMoogD()
     // TODO: de-allocate anything allocated
 }
 
-void bristol::MiniMoogD::initParameter(uint32_t index, Parameter& parameter)
+void bristol::MiniMoogD::initParameter(uint32_t index, Parameter &parameter)
 {
-    if(index >= Parameters::paramCount)
+    if (index >= Parameters::paramCount)
         return;
 
     switch (index)
@@ -39,7 +39,7 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter& parameter)
             parameter.symbol = "glide";
             parameter.description = "Time it takes to glide between notes.";
             break;
-            
+
         case Parameters::paramModMix:
             parameter.ranges.min = 0.0f;
             parameter.ranges.max = 10.0f;
@@ -47,7 +47,8 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter& parameter)
             parameter.hints = kParameterIsAutomable;
             parameter.name = "Modulation Mix";
             parameter.symbol = "ModMix";
-            parameter.description = "Amount of modulation that goes to either Oscillator 3 and the Noise generator";
+            parameter.description = "Amount of modulation that goes to either "
+                "Oscillator 3 and the Noise generator";
             break;
 
         case Parameters::paramOscModSwitch:
@@ -69,9 +70,10 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter& parameter)
             parameter.name = "Oscillator 1 Range";
             parameter.shortName = "Osc 1 Rng";
             parameter.symbol = "Osc1Range";
-            parameter.description = "The octave the oscillator plays in, with LO being for LFO.";
+            parameter.description =
+                "The octave the oscillator plays in, with LO being for LFO.";
             break;
-            
+
         case Parameters::paramOsc1Waveform:
             parameter.ranges.min = 0.0f;
             parameter.ranges.max = 5.0f;
@@ -91,7 +93,8 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter& parameter)
             parameter.name = "Oscillator 2 Range";
             parameter.shortName = "Osc 2 Rng";
             parameter.symbol = "Osc2Range";
-            parameter.description = "The octave the oscillator plays in, with LO being for LFO.";
+            parameter.description =
+                "The octave the oscillator plays in, with LO being for LFO.";
             break;
 
         case Parameters::paramOsc2Frequency:
@@ -102,9 +105,10 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter& parameter)
             parameter.name = "Oscillator 2 Frequency";
             parameter.shortName = "Osc 2 Freq";
             parameter.symbol = "Osc2Freq";
-            parameter.description = "The frequency offset from Oscillator 1 in semitones.";
+            parameter.description =
+                "The frequency offset from Oscillator 1 in semitones.";
             break;
-            
+
         case Parameters::paramOsc2Waveform:
             parameter.ranges.min = 0.0f;
             parameter.ranges.max = 5.0f;
@@ -124,7 +128,8 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter& parameter)
             parameter.name = "Oscillator 3 Control";
             parameter.shortName = "Osc 3 Ctl";
             parameter.symbol = "Osc3CtlSwitch";
-            parameter.description = "Releases oscillator 3 from keyboard control to be used as modulation source.";
+            parameter.description = "Releases oscillator 3 from keyboard control to be "
+                "used as modulation source.";
             break;
 
         case Parameters::paramOsc3Range:
@@ -135,7 +140,8 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter& parameter)
             parameter.name = "Oscillator 3 Range";
             parameter.shortName = "Osc 3 Rng";
             parameter.symbol = "Osc3Range";
-            parameter.description = "The octave the oscillator plays in, with LO being for LFO.";
+            parameter.description =
+                "The octave the oscillator plays in, with LO being for LFO.";
             break;
 
         case Parameters::paramOsc3Frequency:
@@ -146,9 +152,10 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter& parameter)
             parameter.name = "Oscillator 3 Frequency";
             parameter.shortName = "Osc 3 Freq";
             parameter.symbol = "Osc3Freq";
-            parameter.description = "The frequency offset from Oscillator 1 in semitones.";
+            parameter.description =
+                "The frequency offset from Oscillator 1 in semitones.";
             break;
-            
+
         case Parameters::paramOsc3Waveform:
             parameter.ranges.min = 0.0f;
             parameter.ranges.max = 5.0f;
@@ -234,7 +241,8 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter& parameter)
             parameter.name = "External Input Switch";
             parameter.shortName = "Ext Switch";
             parameter.symbol = "ExtSw";
-            parameter.description = "Turns the external audio input on or off for output.";
+            parameter.description =
+                "Turns the external audio input on or off for output.";
             break;
 
         case Parameters::paramExtInputVolume:
@@ -277,7 +285,8 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter& parameter)
             parameter.name = "Noise Type Switch";
             parameter.shortName = "Noise Type";
             parameter.symbol = "NoiseType";
-            parameter.description = "The type of noise. White is actually Pink, and Pink is actually Red.";
+            parameter.description =
+                "The type of noise. White is actually Pink, and Pink is actually Red.";
             break;
 
         case Parameters::paramFilterModSwitch:
@@ -331,7 +340,8 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter& parameter)
             parameter.hints = kParameterIsAutomable;
             parameter.name = "Emphasis";
             parameter.symbol = "Emphasis";
-            parameter.description = "Amount of filter output routed back into the filter.";
+            parameter.description =
+                "Amount of filter output routed back into the filter.";
             break;
 
         case Parameters::paramContourAmount:
@@ -353,7 +363,8 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter& parameter)
             parameter.name = "Attack Time";
             parameter.shortName = "Atk";
             parameter.symbol = "FilterAttackTime";
-            parameter.description = "Time required to raise the filter's cutoff frequency.";
+            parameter.description =
+                "Time required to raise the filter's cutoff frequency.";
             break;
 
         case Parameters::paramDecayTime:
@@ -433,7 +444,7 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter& parameter)
             parameter.symbol = "MainOutputSwitch";
             parameter.description = "Turns the main output on or off.";
             break;
-            
+
         case Parameters::paramA440Switch:
             parameter.ranges.min = 0.0f;
             parameter.ranges.max = 1.0f;
@@ -442,7 +453,8 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter& parameter)
             parameter.name = "A-440";
             parameter.shortName = "A440";
             parameter.symbol = "A440Switch";
-            parameter.description = "Sends a solid pitch of 440 (A) out to tune oscillators";
+            parameter.description =
+                "Sends a solid pitch of 440 (A) out to tune oscillators";
             break;
 
         case Parameters::paramPhonesVolumeOut:
@@ -453,7 +465,8 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter& parameter)
             parameter.name = "Headphone Volume";
             // TODO: Add short name
             parameter.shortName = "";
-            parameter.description = "Amount of additional gain to the headphones output.";
+            parameter.description =
+                "Amount of additional gain to the headphones output.";
             break;
 
         case Parameters::paramPitchBendWheel:
@@ -482,17 +495,34 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter& parameter)
     }
 }
 
-
-
-void bristol::MiniMoogD::run(const float**, const float** outputs, uint32_t frames, const MidiEvent *midiEvents, uint32_t midiEventCount)
+float bristol::MiniMoogD::getParameterValue(uint32_t paramID) const
 {
-    float* const outL = outputs[0];
-    float* const outR = outputs[1];
+    switch (paramID)
+    {
+        case Parameters::paramTune:
+            return masterTune;
+        case Parameters::paramGlide:
+            return glideAmount;
+        case Parameters::paramModMix:
+            return modulationMix;
+        case Parameters::paramOscModSwitch:
+            return static_cast<float>(switches[SwitchBits::OscillatorModulation]);
+
+    }
+    return 0.0f;
+}
+
+void bristol::MiniMoogD::run(const float **, float **outputs, uint32_t frames,
+        const MidiEvent *midiEvents,
+        uint32_t midiEventCount)
+{
+    float *const outL = outputs[0];
+    float *const outR = outputs[1];
 
     // Main loop
-    for(uint32_t count, pos = 0, curEventIndex = 0; pos < frames)
+    for (uint32_t count, pos = 0, curEventIndex = 0; pos < frames;)
     {
-        for(; curEventIndex < midiEventCount && pos >= midiEvents[curEventIndex].frame; ++curEventIndex)
+        for (; curEventIndex < midiEventCount && pos >= midiEvents[curEventIndex].frame; ++curEventIndex)
         {
         }
     }
