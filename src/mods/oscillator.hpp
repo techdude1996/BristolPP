@@ -6,38 +6,33 @@
 
 #include <cmath>
 
-#ifdef BRISTOL_DEBUG
-#include <fmt/format.h>
-#endif
+#include "iWaveform.hpp"
 
 namespace bristol
 {
-    /// bristol::WAVEFORM_SHAPE
-    /// \brief Shape of the oscillator's waveform
-    ///
-    enum class WAVEFORM_SHAPE : unsigned short int
-    {
-        SINE,
-        COSINE,
-        TRIANGLE,
-        SAWTOOTH_QUICK,  /// Less accurate, but faster computationaly
-        SAWTOOTH_SLOW,   /// More realistic, but computationaly heavy
-        SQUARE
-    };
-
     class Oscillator
     {
         private:
-            bristol::WAVEFORM_SHAPE m_currentShape;
-            unsigned int m_sawtoothSlowApprox;      // The number of sine waves summed together for the slow model
+            bristol::iWaveform &m_waveform;
+            double m_frequency;
 
         public:
-            void CurrentWaveform(bristol::WAVEFORM_SHAPE newShape) { m_currentShape = newShape; }
-            bristol::WAVEFORM_SHAPE CurrentWaveform() { return m_currentShape; }
+            Oscillator(bristol::iWaveform &waveform, const double frequency) : m_waveform(waveform), m_frequency(frequency) {}
 
+            void SetWaveform(bristol::iWaveform &waveform) { m_waveform = waveform; }
+
+            void Frequency(double frequency) { m_frequency = frequency; }
+            double Frequency() { return m_frequency; }
+
+            double Execute(double time)
+            {
+                return m_waveform.Execute(m_frequency, time);
+            }
+/**
             // Temporary function to hold the waveforms
             double TempExec(double frequency, double dTime)
             {
+                m_waveform.execute(frequency, dTime);
                 switch (m_currentShape)
                 {
                     case bristol::WAVEFORM_SHAPE::SINE:
@@ -61,7 +56,6 @@ namespace bristol
                 }
                 return 0.0;
             }
-        
+**/        
     };  
 };
-
