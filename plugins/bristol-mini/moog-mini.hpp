@@ -2,12 +2,14 @@
  * Minimoog Model D
  *
  * Notes:
- *  - The 3 osc could not be put into sync, thus giving a warm sound
- *      (so offset times or waveforms for each osc)
+ *  - The 3 oscillators are not perfectly in sync, there are some drifts
+ *      causing a warm sound.
  *  - The 3rd osc can be an LFO, the new re-make has an independent LFO
  **/
 
 #include <bitset>
+#include <array>
+#include <chrono>
 
 #include "DistrhoPlugin.hpp"
 #include "DistrhoPluginInfo.h"
@@ -31,16 +33,15 @@ namespace bristol
             bristol::Envelope m_envelopeMod;
             bristol::Noise m_noiseGen;
 
-            // Parameters
+            std::chrono::time_point<std::chrono::steady_clock> m_StartTime;
 
             /**
                 Master Tune
 
-                Controls the offset frequency of the pressed key by +/- 2.5 somethings. 
-                I'm not sure if this is in semitones, like the other 2 oscillators' frequency
-                knobs, or some other obscure range.
+                Controls the offset frequency of the pressed key by +/- 2.5 volts. 
+		It is 5 volts per octave, so this is +/- 6 semitones.
 
-                UI Value Range: -2.5 => +2.5 semitones (ATM)
+                UI Value Range: -2.5 => +2.5 volts
 
                 Scale: Linear
                 
@@ -82,11 +83,120 @@ namespace bristol
             /**
                 Switch Values
 
-                Holds the values of the 15 usable switches in a space efficieny mannor.
-
                 See the docs for the enum for specifics.
             */
-            std::bitset<15> switches;
+            std::uint16_t switches;
+
+            /**
+                Oscillator 1 Octave Range Position
+
+                Hold the position of the oscillator 1 range knob.
+
+                This controls what is the fundamental octave for the oscillator.
+
+                UI Value Range: 0.0 => 5.0
+
+                Usage Value Range: 0 => 5 (integer positions)
+                
+                Scale: Discrete
+            */
+            int osc1RangePos;
+
+            /**
+                Oscillator 1 Waveform Position
+
+                Holds the position of the oscillator 1 waveform knob.
+
+                The waveforms that Oscillator 1 has is:
+                0 Triangle
+                1 Triangle/Sawtooth Hybrid
+                2 Sawtooth
+                3 Square (aka Pulse 1)
+                4 Wide Rectangle (aka Pulse 2)
+                5 Narrow Rectangle (aka Pulse 3)
+
+                Value Range: 0 => 5
+            */
+            int osc1WaveformPos;
+
+            /**
+                Oscillator 2 Octave Range Knob Position
+
+                This controls what is the fundamental octave for the oscillator.
+
+                Range: 0 => 5 (integer positions)
+                
+                Scale: Discrete
+            */
+            int osc2RangePos;
+
+            /**
+                Oscillator 2 Frequency Offset Knob Position (In Semitones)
+
+                Range: -8.0 => +8.0
+
+                Scale: Linear
+            */
+            float osc2FrequencyOffsetPos;
+
+            /**
+                Oscillator 2 Waveform Knob Position
+
+                The waveforms that Oscillator 2 has is (Same as Oscillator 1):
+                0 Triangle
+                1 Triangle/Sawtooth Hybrid
+                2 Sawtooth
+                3 Square (aka Pulse 1)
+                4 Wide Rectangle (aka Pulse 2)
+                5 Narrow Rectangle (aka Pulse 3)
+
+                Value Range: 0 => 5
+            */
+            int osc2WaveformPos;
+
+            /**
+                Oscillator 3 Octave Range Knob Position
+
+                This controls what is the fundamental octave for the oscillator.
+
+                Range: 0 => 5 (integer positions)
+                
+                Scale: Discrete
+            */
+            int osc3RangePos;
+
+            /**
+                Oscillator 3 Frequency Offset Knob Position (In Semitones)
+
+                Range: -8.0 => +8.0
+
+                Scale: Linear
+            */
+            float osc3FrequencyOffsetPos;
+
+            /**
+                Oscillator 3 Waveform Knob Position
+
+                The waveforms that Oscillator 3 has is:
+                0 Triangle
+                1 Reverse Sawtooth (Oscillator 3 exclusive)
+                2 Sawtooth
+                3 Square (aka Pulse 1)
+                4 Wide Rectangle (aka Pulse 2)
+                5 Narrow Rectangle (aka Pulse 3)
+
+                Value Range: 0 => 5
+            */
+            int osc3WaveformPos;
+
+            /**
+                Oscillator 1 Volume Knob Position
+
+                Range: 0.0 => 10.0
+
+                Scale: Linear
+            */
+            float osc1VolPos;
 
         public:
             enum Parameters
@@ -235,23 +345,28 @@ namespace bristol
                 paramCount
             };
 
-            enum SwitchBits : std::size_t
+            enum SwitchBits : std::uint16_t
             {
-                OscillatorModulation = 0,
-                Osc3Control,
-                Osc1Power,
-                Osc2Power,
-                Osc3Power,
-                ExternInputPower,
-                NoiseGenPower,
-                NoiseType,
-                FilterModEnable,
-                KeyboardCtl1,
-                KeyboardCtl2,
-                A440,
-                MainOutput
+                OscillatorModulation = 0b0000000000000001,
+                Osc3Control          = 0b0000000000000010,
+                Osc1Power            = 0b0000000000000100,
+                Osc2Power            = 0b0000000000001000,
+                Osc3Power            = 0b0000000000010000,
+                ExternInputPower     = 0b0000000000100000,
+                NoiseGenPower        = 0b0000000001000000,
+                NoiseType            = 0b0000000010000000,
+                FilterModEnable      = 0b0000000100000000,
+                KeyboardCtl1         = 0b0000001000000000,
+                KeyboardCtl2         = 0b0000010000000000,
+                A440                 = 0b0000100000000000,
+                MainOutput           = 0b0001000000000000
             };
 
+        private:
+            // This has to be after the enums
+            std::array<float, Parameters::paramCount> fParams;
+
+        public:
             MiniMoogD();
             ~MiniMoogD();
 

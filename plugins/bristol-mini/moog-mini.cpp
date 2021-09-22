@@ -6,6 +6,7 @@ bristol::MiniMoogD::MiniMoogD() : Plugin(Parameters::paramCount, 1, 0)
     // TODO
     // Init oscs, envs, etc. here
     // loadProgram(0);
+    m_StartTime = std::chrono::steady_clock::now();
 }
 
 bristol::MiniMoogD::~MiniMoogD()
@@ -340,8 +341,7 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter &parameter)
             parameter.hints = kParameterIsAutomable;
             parameter.name = "Emphasis";
             parameter.symbol = "Emphasis";
-            parameter.description =
-                "Amount of filter output routed back into the filter.";
+            parameter.description = "Amount of filter output routed back into the filter, creates resonance.";
             break;
 
         case Parameters::paramContourAmount:
@@ -352,8 +352,7 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter &parameter)
             parameter.name = "Contour Amount";
             parameter.shortName = "Contour";
             parameter.symbol = "Contour";
-            // TODO: Fix description
-            parameter.description = "IDK.";
+            parameter.description = "The frequency reached by the attack time over the selected frequency.";
             break;
 
         case Parameters::paramAttackTime:
@@ -363,8 +362,7 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter &parameter)
             parameter.name = "Attack Time";
             parameter.shortName = "Atk";
             parameter.symbol = "FilterAttackTime";
-            parameter.description =
-                "Time required to raise the filter's cutoff frequency.";
+            parameter.description = "Time to raise the filter's cutoff frequency + the contour amount.";
             break;
 
         case Parameters::paramDecayTime:
@@ -374,8 +372,7 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter &parameter)
             parameter.name = "Decay Time";
             parameter.shortName = "Decay";
             parameter.symbol = "FilterDecayTime";
-            // TODO: Add description
-            parameter.description = "";
+            parameter.description = "Time to lower the filter's cutoff frequency to the selected frequency or the sustain level.";
             break;
 
         case Parameters::paramSustainLevel:
@@ -385,8 +382,7 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter &parameter)
             parameter.name = "Sustain Level";
             parameter.shortName = "Sustain";
             parameter.symbol = "FilterSustainLevel";
-            // TODO: Add description
-            parameter.description = "";
+            parameter.description = "Frequency the filter will be while a key is held.";
             break;
 
         case Parameters::paramLoudnessAttackTime:
@@ -396,8 +392,7 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter &parameter)
             parameter.name = "Attack Time";
             parameter.shortName = "Atk";
             parameter.symbol = "LoudnessAttackTime";
-            // TODO: Add description
-            parameter.description = "";
+            parameter.description = "Time to raise the volume to max.";
             break;
 
         case Parameters::paramLoudnessDecayTime:
@@ -407,8 +402,7 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter &parameter)
             parameter.name = "Decay Time";
             parameter.shortName = "Decay";
             parameter.symbol = "LoudnessDecayTime";
-            // TODO: Add description
-            parameter.description = "";
+            parameter.description = "Time to lower the volume to sustain level/fall off.";
             break;
 
         case Parameters::paramLoudnessSustainLevel:
@@ -418,8 +412,7 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter &parameter)
             parameter.name = "Sustain Level";
             parameter.shortName = "Sustain";
             parameter.symbol = "LoudnessSustainLevel";
-            // TODO: Add description
-            parameter.description = "";
+            parameter.description = "Volume to hold while key is pressed.";
             break;
 
         case Parameters::paramMainVolumeOut:
@@ -430,8 +423,7 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter &parameter)
             parameter.name = "Volume";
             parameter.shortName = "Volume";
             parameter.symbol = "MainVolumeOut";
-            // TODO: Add description
-            parameter.description = "";
+            parameter.description = "The main synth output volume.";
             break;
 
         case Parameters::paramMainVolumeSwitch:
@@ -465,8 +457,7 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter &parameter)
             parameter.name = "Headphone Volume";
             // TODO: Add short name
             parameter.shortName = "";
-            parameter.description =
-                "Amount of additional gain to the headphones output.";
+            parameter.description = "Amount of additional gain to the headphones output.";
             break;
 
         case Parameters::paramPitchBendWheel:
@@ -497,19 +488,119 @@ void bristol::MiniMoogD::initParameter(uint32_t index, Parameter &parameter)
 
 float bristol::MiniMoogD::getParameterValue(uint32_t paramID) const
 {
-    switch (paramID)
-    {
-        case Parameters::paramTune:
-            return masterTune;
-        case Parameters::paramGlide:
-            return glideAmount;
-        case Parameters::paramModMix:
-            return modulationMix;
-        case Parameters::paramOscModSwitch:
-            return static_cast<float>(switches[SwitchBits::OscillatorModulation]);
+    if(paramID < Parameters::paramCount)
+        return fParams[paramID];
 
-    }
+    // If for some reason something invalid is given, the expected result is 0
     return 0.0f;
+}
+
+void bristol::MiniMoogD::setParameterValue(uint32_t paramID, float value)
+{
+    if(paramID < Parameters::paramCount)
+    {
+        // Keep the original value in case the new one is invalid
+        // and the change request needs to be ignored.
+        float oldValue = fParams[paramID];
+
+        fParams[paramID] = value;
+
+        switch(paramID)
+        {
+            case Parameters::paramTune:
+                break;
+            case Parameters::paramGlide:
+                break;
+            case Parameters::paramModMix:
+                break;
+            case Parameters::paramOscModSwitch:
+                // If the above is not true, use this
+                if(value)
+                    switches |= SwitchBits::OscillatorModulation;
+                else
+                    switches &= ~(SwitchBits::OscillatorModulation);
+                break;
+            case Parameters::paramOsc1Range:
+                break;
+            case Parameters::paramOsc1Waveform:
+                break;
+            case Parameters::paramOsc2Range:
+                break;
+            case Parameters::paramOsc2Frequency:
+                break;
+            case Parameters::paramOsc2Waveform:
+                break;
+            case Parameters::paramOsc3CtlSwitch:
+                break;
+            case Parameters::paramOsc3Range:
+                break;
+            case Parameters::paramOsc3Frequency:
+                break;
+            case Parameters::paramOsc3Waveform:
+                break;
+            case Parameters::paramOsc1MixSwitch:
+                break;
+            case Parameters::paramOsc1Volume:
+                break;
+            case Parameters::paramOsc2MixSwitch:
+                break;
+            case Parameters::paramOsc2Volume:
+                break;
+            case Parameters::paramOsc3MixSwitch:
+                break;
+            case Parameters::paramOsc3Volume:
+                break;
+            case Parameters::paramExtInputMixSwitch:
+                break;
+            case Parameters::paramExtInputVolume:
+                break;
+            case Parameters::paramNoiseMixSwitch:
+                break;
+            case Parameters::paramNoiseVolume:
+                break;
+            case Parameters::paramNoiseTypeSwitch:
+                break;
+            case Parameters::paramFilterModSwitch:
+                break;
+            case Parameters::paramKeyboardCtl1Switch:
+                break;
+            case Parameters::paramKeyboardCtl2Switch:
+                break;
+            case Parameters::paramCutoffFreq:
+                break;
+            case Parameters::paramEmphasis:
+                break;
+            case Parameters::paramContourAmount:
+                break;
+            case Parameters::paramAttackTime:
+                break;
+            case Parameters::paramDecayTime:
+                break;
+            case Parameters::paramSustainLevel:
+                break;
+            case Parameters::paramLoudnessAttackTime:
+                break;
+            case Parameters::paramLoudnessDecayTime:
+                break;
+            case Parameters::paramLoudnessSustainLevel:
+                break;
+            case Parameters::paramMainVolumeOut:
+                break;
+            case Parameters::paramMainVolumeSwitch:
+                break;
+            case Parameters::paramA440Switch:
+                break;
+            case Parameters::paramPhonesVolumeOut:
+                break;
+            case Parameters::paramPitchBendWheel:
+                break;
+            case Parameters::paramModWheel:
+                break;
+            default:
+                // Error, should not get here
+                break;
+        }
+    }
 }
 
 void bristol::MiniMoogD::run(const float **, float **outputs, uint32_t frames,
@@ -519,11 +610,61 @@ void bristol::MiniMoogD::run(const float **, float **outputs, uint32_t frames,
     float *const outL = outputs[0];
     float *const outR = outputs[1];
 
+    //TimePosition time = getTimePosition();
+
     // Main loop
     for (uint32_t count, pos = 0, curEventIndex = 0; pos < frames;)
     {
         for (; curEventIndex < midiEventCount && pos >= midiEvents[curEventIndex].frame; ++curEventIndex)
         {
+            if (midiEvents[curEventIndex].size > MidiEvent::kDataSize)
+            {
+                continue;
+            }
+
+            const std::uint8_t* data = midiEvents[curEventIndex].data;
+
+            // TODO: Ask Falk about this black magic
+            // and status codes
+            const std::uint8_t status = data[0] & 0xF0;
+
+            switch (status)
+            {
+                // Key toggle?
+                case 0x90:
+                    const std::uint8_t note     = data[1];
+                    const std::uint8_t velocity = data[2];
+
+                    if (note < 128)
+                    {
+                        return;
+                    }
+                    else if (velocity > 0)
+                    {
+                        m_Osc1.Frequency(440.0f * std::pow(2.0f, (float)(note - 69)/12.0f));
+
+                        const std::chrono::duration<double> dTime(std::chrono::steady_clock::now() - m_StartTime);
+                        float val = m_Osc1.Execute(dTime.count());
+                    }
+            }
+
+            const TimePosition &currentTimePos(getTimePosition());
+            if (currentTimePos.bbt.valid)
+            {
+                // When a transport is running
+                const double secondsPerBeat = 60.0 / currentTimePos.bbt.beatsPerMinute;
+                const double framesPerBeat = getSampleRate() * secondsPerBeat;
+                const double beatsPerFrame = secondsPerBeat * getSampleRate();
+
+                const double currentSeconds = currentTimePos.frame * beatsPerFrame * secondsPerBeat;
+                
+            }
+            else
+            {
+                // Free-roll when no transport is running
+                const auto currentTime = std::chrono::steady_clock::now();
+                const auto dTime = std::chrono::duration_cast<std::chrono::seconds>(currentTime - m_StartTime).count();
+            }
         }
     }
 }
