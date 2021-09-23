@@ -8,9 +8,9 @@ namespace bristol
 {
     class SquareWaveform : iWaveform
     {
-        float Execute(float frequency, float time) override
+        double Execute(double frequency, double time) override
         {
-            return std::sin((frequency * 2.0f * 3.141529f) * time) > 0.0f ? 1.0f : -1.0f;
+            return std::sin(FreqToAngVel(frequency) * time) > 0.0 ? 1.0 : -1.0;
         }
     };
 }
