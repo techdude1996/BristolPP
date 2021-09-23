@@ -15,18 +15,34 @@ namespace bristol
         private:
             bristol::iWaveform &m_waveform;
             double m_frequency;
+            double m_sampleRate;
+            double m_phase;
 
         public:
-            Oscillator(bristol::iWaveform &waveform, const double frequency) : m_waveform(waveform), m_frequency(frequency) {}
+            Oscillator(bristol::iWaveform &waveform) : m_waveform(waveform) { ResetPhase(); }
 
-            void SetWaveform(bristol::iWaveform &waveform) { m_waveform = waveform; }
+            inline void ResetPhase() { m_phase = 0.0; }
 
-            void Frequency(double frequency) { m_frequency = frequency; }
-            double Frequency() { return m_frequency; }
-
-            double Execute(double time)
+            inline void NudgePhase()
             {
-                return m_waveform.Execute(m_frequency, time);
+                m_phase += m_frequency / m_sampleRate;
+                if(m_phase >= 1.0)
+                    m_phase -= 1.0;
+            }
+
+            void   Waveform(bristol::iWaveform &waveform) { m_waveform = waveform; }
+
+            void   Frequency(double frequency)            { m_frequency = frequency; }
+            double Frequency()                            { return m_frequency; }
+
+            void   SampleRate(double sampleRate)          { m_sampleRate = sampleRate; }
+            double SampleRate()                           { return m_sampleRate; }
+
+            double Execute()
+            {
+                double out = m_waveform.Execute(m_frequency, m_phase);
+                NudgePhase();
+                return out;
             }
 /**
             // Temporary function to hold the waveforms

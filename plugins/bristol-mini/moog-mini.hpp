@@ -33,8 +33,6 @@ namespace bristol
             bristol::Envelope m_envelopeMod;
             bristol::Noise m_noiseGen;
 
-            std::chrono::time_point<std::chrono::steady_clock> m_StartTime;
-
             /**
                 Master Tune
 

@@ -6,7 +6,6 @@ bristol::MiniMoogD::MiniMoogD() : Plugin(Parameters::paramCount, 1, 0)
     // TODO
     // Init oscs, envs, etc. here
     // loadProgram(0);
-    m_StartTime = std::chrono::steady_clock::now();
 }
 
 bristol::MiniMoogD::~MiniMoogD()
@@ -643,28 +642,10 @@ void bristol::MiniMoogD::run(const float **, float **outputs, uint32_t frames,
                     {
                         m_Osc1.Frequency(440.0f * std::pow(2.0f, (float)(note - 69)/12.0f));
 
-                        const std::chrono::duration<double> dTime(std::chrono::steady_clock::now() - m_StartTime);
-                        float val = m_Osc1.Execute(dTime.count());
+                        float val = (float)m_Osc1.Execute();
                     }
             }
 
-            const TimePosition &currentTimePos(getTimePosition());
-            if (currentTimePos.bbt.valid)
-            {
-                // When a transport is running
-                const double secondsPerBeat = 60.0 / currentTimePos.bbt.beatsPerMinute;
-                const double framesPerBeat = getSampleRate() * secondsPerBeat;
-                const double beatsPerFrame = secondsPerBeat * getSampleRate();
-
-                const double currentSeconds = currentTimePos.frame * beatsPerFrame * secondsPerBeat;
-                
-            }
-            else
-            {
-                // Free-roll when no transport is running
-                const auto currentTime = std::chrono::steady_clock::now();
-                const auto dTime = std::chrono::duration_cast<std::chrono::seconds>(currentTime - m_StartTime).count();
-            }
         }
     }
 }
